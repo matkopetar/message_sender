@@ -5,8 +5,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-#    command: uvicorn app.main:app --host 0.0.0.0
+    depends_on:
+      - sqlite3
     volumes:
       - .:/app
     ports:
       - 8000:8000
+
+  sqlite3:
+    image: nouchka/sqlite3:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./sqlite3_db/:/root/sqlite3_db/
+    ports:
+      - '9000:9000'
+    restart: unless-stopped
+
+volumes:
+  sqlite3_db: null
