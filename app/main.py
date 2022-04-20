@@ -28,6 +28,13 @@ async def list_messages_by_client_id(client_id: int):
     return all_messages
 
 
+@app.get('/messages', response_model=List[MessageSchema])
+async def list_messages():
+    query = messages.select()
+    all_messages = await database.fetch_all(query)
+    return all_messages
+
+
 @app.websocket('/ws/{client_id}')
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
