@@ -14,7 +14,6 @@ app = FastAPI()
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 message_service = MessageService()
-resolver_service = ResolverService()
 
 
 @app.on_event('startup')
@@ -55,12 +54,12 @@ async def register():
     if ws_server_number >= MAX_NUMBER_OF_WEBSOCKET_SERVERS:
         return {'message': 'Cannot register new WS server.'}
 
-    await resolver_service.register_new_server(ws_server_number + 1)
+    await ResolverService.register_new_server(ws_server_number + 1)
     return {'message': 'New server registered successfully'}
 
 
 @app.get('/hello')
 async def hello():
-    await resolver_service.assign_websocket_server()
+    server_name = await ResolverService.assign_websocket_server()
+    return server_name
 
-    return 'Hello'

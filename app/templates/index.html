@@ -26,7 +26,7 @@
                         let websocket_server = document.getElementById('websocket_server')
                         websocket_server.value = data
 
-                        ws = new WebSocket(`ws://localhost:8080/ws/${client_id}`)
+                        ws = new WebSocket(`ws://localhost:8080/${data}/ws/${client_id}`)
 
                         ws.onmessage = function(event) {
                             let messages = document.getElementById('messages')
