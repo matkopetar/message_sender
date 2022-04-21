@@ -1,19 +1,30 @@
 from typing import List
-
+import aioredis
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.templating import Jinja2Templates
 
 from app.models import database, messages
 from app.schemas import MessageSchema
 from app.services.message import MessageService
-from app.connection_manager import manager
-from app.utils.constants import TEMPLATES_DIR
+from app.services.resolver import ResolverService
+from app.utils.constants import TEMPLATES_DIR, MAX_NUMBER_OF_WEBSOCKET_SERVERS
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 message_service = MessageService()
+resolver_service = ResolverService()
+
+
+@app.on_event('startup')
+async def startup():
+    await database.connect()
+
+
+@app.on_event('shutdown')
+async def shutdown():
+    await database.disconnect()
 
 
 @app.get('/')
@@ -35,26 +46,21 @@ async def list_messages():
     return all_messages
 
 
-@app.websocket('/ws/{client_id}')
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    await manager.connect(websocket)
-    try:
-        while True:
-            text = await websocket.receive_text()
-            output_text = message_service.insert_message_and_get_output_text(text=text, client_id=client_id)
+@app.get('/register')
+async def register():
+    redis = aioredis.from_url("redis://redis", db=1)
 
-            await manager.send_personal_message(f'Received message: {output_text}', websocket)
-            await manager.broadcast(f'Client #{client_id} says: {output_text}')
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f'Client #{client_id} left the chat')
+    ws_server_number = int(await redis.get('ws_server_number')) if await redis.get('ws_server_number') else 0
+
+    if ws_server_number >= MAX_NUMBER_OF_WEBSOCKET_SERVERS:
+        return {'message': 'Cannot register new WS server.'}
+
+    await resolver_service.register_new_server(ws_server_number + 1)
+    return {'message': 'New server registered successfully'}
 
 
-@app.on_event('startup')
-async def startup():
-    await database.connect()
+@app.get('/hello')
+async def hello():
+    await resolver_service.assign_websocket_server()
 
-
-@app.on_event('shutdown')
-async def shutdown():
-    await database.disconnect()
+    return 'Hello'
