@@ -1,4 +1,7 @@
+from typing import List
+
 from app.models import database, messages
+from app.schemas.message import MessageSchema
 from app.utils.modifiers import modify_message_text, INPUT_MODIFIER, OUTPUT_MODIFIER
 
 
@@ -12,3 +15,17 @@ class MessageService:
         modified_output_text = modify_message_text(modified_input_text, OUTPUT_MODIFIER)
 
         return modified_output_text
+
+    @staticmethod
+    async def get_all_messages() -> List[MessageSchema]:
+        query = messages.select()
+        all_messages = await database.fetch_all(query)
+
+        return all_messages
+
+    @staticmethod
+    async def get_messages_by_client_id(client_id: int) -> List[MessageSchema]:
+        query = messages.select().where(messages.c.client_id == client_id)
+        all_messages = await database.fetch_all(query)
+
+        return all_messages

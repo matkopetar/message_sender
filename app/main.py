@@ -3,7 +3,7 @@ import aioredis
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.templating import Jinja2Templates
 
-from app.models import database, messages
+from app.models import database
 from app.schemas.message import MessageSchema
 from app.services.message import MessageService
 from app.services.resolver import ResolverService
@@ -33,15 +33,13 @@ async def index(request: Request):
 
 @app.get('/messages/{client_id}', response_model=List[MessageSchema])
 async def list_messages_by_client_id(client_id: int):
-    query = messages.select().where(messages.c.client_id == client_id)
-    all_messages = await database.fetch_all(query)
-    return all_messages
+    client_messages = await MessageService.get_messages_by_client_id(client_id)
+    return client_messages
 
 
 @app.get('/messages', response_model=List[MessageSchema])
 async def list_messages():
-    query = messages.select()
-    all_messages = await database.fetch_all(query)
+    all_messages = await MessageService.get_all_messages()
     return all_messages
 
 
