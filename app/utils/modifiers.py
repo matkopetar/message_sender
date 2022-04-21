@@ -38,4 +38,3 @@ OUTPUT_MODIFIER = {
     'regex': OUTPUT_MODIFIER_REGEX,
     'function': output_modifier_function
 }
-

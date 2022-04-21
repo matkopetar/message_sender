@@ -1,13 +1,12 @@
 from typing import List
-import aioredis
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 
 from app.models import database
 from app.schemas.message import MessageSchema
 from app.services.message import MessageService
 from app.services.resolver import ResolverService
-from app.utils.constants import TEMPLATES_DIR, MAX_NUMBER_OF_WEBSOCKET_SERVERS
+from app.utils.constants import TEMPLATES_DIR
 
 app = FastAPI()
 
@@ -56,4 +55,3 @@ async def register():
 async def hello():
     server_name = await ResolverService.assign_websocket_server()
     return server_name
-
