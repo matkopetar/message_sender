@@ -22,7 +22,6 @@
                 fetch("http://localhost:8080/hello")
                     .then(response => response.json())
                     .then( data => {
-                        console.log(data)
                         let websocket_server = document.getElementById('websocket_server')
                         websocket_server.value = data
 
