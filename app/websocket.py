@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket
 
-from app.connection_manager import manager
+from app.utils.connection_manager import manager
 from app.models import database
 from app.redis import redis_connector_for_websocket
 

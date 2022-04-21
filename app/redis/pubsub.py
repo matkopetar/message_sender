@@ -6,7 +6,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 
 from app.services.message import MessageService
 from app.services.resolver import ResolverService
-from app.connection_manager import manager
+from app.utils.connection_manager import manager
 
 
 async def websocket_handler(ws: WebSocket, server_name: str, client_id: int, r):

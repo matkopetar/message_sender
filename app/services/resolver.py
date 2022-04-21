@@ -31,6 +31,7 @@ class ResolverService:
 
         return True
 
+
     @staticmethod
     async def assign_websocket_server() -> Union[None, str]:
         redis = aioredis.from_url(os.environ.get('REDIS_URL'))
