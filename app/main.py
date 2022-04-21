@@ -45,13 +45,10 @@ async def list_messages():
 
 @app.get('/register')
 async def register():
-    redis = aioredis.from_url('redis://redis', db=1)
-
-    ws_server_number = int(await redis.get('ws_server_number')) if await redis.get('ws_server_number') else 0
-    if ws_server_number >= MAX_NUMBER_OF_WEBSOCKET_SERVERS:
+    new_server_registered = await ResolverService.register_new_server()
+    if not new_server_registered:
         return {'message': 'Cannot register new WS server.'}
 
-    await ResolverService.register_new_server(ws_server_number + 1)
     return {'message': 'New server registered successfully'}
 
 
