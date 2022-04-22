@@ -2,3 +2,7 @@ TEMPLATES_DIR = 'app/templates'
 
 MAX_NUMBER_OF_WEBSOCKET_SERVERS = 3
 WEBSOCKET_SERVER_PREFIX = 'ws'
+
+
+CONNECTION_NUMBER_SUFFIX = '_connection_number'
+WS_SERVER_NUMBER = 'ws_server_number'
