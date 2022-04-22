@@ -18,7 +18,7 @@ async def websocket_handler(ws: WebSocket, server_name: str, client_id: int, r):
             await r.publish(os.environ.get('REDIS_CHANNEL'), f'Client #{client_id} says: {output_text}')
     except WebSocketDisconnect:
         manager.disconnect(ws)
-        await ResolverService.lower_connection_number(server_name)
+        await ResolverService.decrease_connection_number(server_name)
 
         await r.publish(os.environ.get('REDIS_CHANNEL'), f'Client #{client_id} left the chat')
 

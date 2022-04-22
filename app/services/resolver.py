@@ -58,8 +58,8 @@ class ResolverService:
         return ''
 
     @staticmethod
-    async def lower_connection_number(server_name: str) -> None:
+    async def decrease_connection_number(server_name: str, decrease_by: int = 1) -> None:
         redis = aioredis.from_url(os.environ.get('REDIS_URL'))
 
         connection_number = int(await redis.get(server_name + CONNECTION_NUMBER_SUFFIX))
-        await redis.set(server_name + CONNECTION_NUMBER_SUFFIX, connection_number - 1)
+        await redis.set(server_name + CONNECTION_NUMBER_SUFFIX, connection_number - decrease_by)
